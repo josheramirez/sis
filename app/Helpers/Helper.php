@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use DateTime;
 use Auth;
-
+use siscont\Paciente;
 
 class Helper
 {
@@ -48,6 +48,7 @@ class Helper
 
     public static function actualizarSiscont($datos)
     {
+
         $connection = mysqli_init();
         $connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
         $connection = $connection->real_connect('10.8.64.41', 'nacevedo', '12345678', '');
@@ -55,15 +56,62 @@ class Helper
         // $numero_dir = self::getNumeroDir($datos['direccion']); //Obtiene numero de direccion guardada
         // $direccion = str_replace(' ' . $numero_dir, '', $datos['direccion']); // Obtiene direccion base, sin numero
         
-        $datos_siscont = DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0]; //Obtenog los datos de paciente en siscont
-        $comuna =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos_siscont->comuna_id)[0]; //Obtengo comuna de siscont
-        $comuna_act =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos->comuna)[0];
-        // dd( $datos,$datos_siscont,$comuna,$comuna_act);
+        $datos['rut']=$datos['run'];
+        $es_maestra=isset(DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0]);
+        if($es_maestra){
+            dd("es maestra");
 
-        if (
-            ($datos_siscont->email <> $datos->email) ||
-            ($datos_siscont->comuna_id <> $datos->comuna) || //Compara si los datos ingresados son iguales a los de comuna
-            ($datos_siscont->telefono <> $datos->telefono) || //lo mismo para el telefono
+
+        }else{
+
+
+            // se guarda el dato directamente en dbMaestra, ya que es un paciente rescatado de fonasa
+
+            $fechaNacimiento = DateTime::createFromFormat('d-m-Y', $datos->fechaNacimiento);				
+            $paciente = new Paciente;
+            
+            $paciente->tipoDoc        =$datos->tipoDoc;
+            if ($datos->tipoDoc=="1") {
+                $paciente->rut        =explode("-",$datos->rut)[0];
+                $paciente->dv         =explode("-",$datos->rut)[1];
+            }
+            else {	
+                $paciente->numDoc     =$datos->numDoc;
+            }	
+            // dd($datos,$paciente);
+				$paciente->nombre           = $datos->nombre;
+				$paciente->apPaterno        = $datos->apPaterno;
+				$paciente->apMaterno        = $datos->apMaterno;
+				$paciente->fechaNacimiento  = $fechaNacimiento;
+                $paciente->genero_id        = $datos->genero;
+                $paciente->prevision_id     = $datos->prevision;
+                $paciente->prais            = $datos->prais;
+                $paciente->funcionario      = $datos->funcionario;
+                $paciente->via_id     	    = $datos->via;
+                $paciente->direccion        = $datos->direccion;
+                $paciente->numero           = $datos->numero;
+                $paciente->X                = $datos->x;
+                $paciente->Y                = $datos->y;
+                $paciente->comuna_id        = $datos->comuna;
+
+                $paciente->telefono         = $datos->telefono;
+                $paciente->telefono2        = $datos->telefono2;
+                $paciente->email            = $datos->email;
+                $paciente->active           = $datos->active;
+                
+                // dd($datos->all(),$paciente);
+                $paciente->save();	
+                
+        }
+            
+            
+    
+            $comuna =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos_siscont->comuna_id)[0]; //Obtengo comuna de siscont
+            $comuna_act =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos->comuna)[0];            
+            if (
+                ($datos_siscont->email <> $datos->email) ||
+                ($datos_siscont->comuna_id <> $datos->comuna) || //Compara si los datos ingresados son iguales a los de comuna
+                ($datos_siscont->telefono <> $datos->telefono) || //lo mismo para el telefono
             ($datos_siscont->telefono2 <> $datos->telefono2) || //lo mismo para el telefono
             ($datos_siscont->direccion <> $datos->direccion) || //lo mismo para direccion
             ($datos_siscont->numero <> $datos->numero ) //lo mismo para para numero de direccion
@@ -74,7 +122,7 @@ class Helper
                 ', telefono="'. $datos['telefono'] .'", telefono2="'. $datos['telefono2'] .'", email="'. $datos['email'] .'" WHERE rut =' . $datos['rut']);
                
             }
-            // dd( $datos,$datos_siscont,$comuna,$comuna_act);
+
     }
 
     public static function formatearFecha($fecha)

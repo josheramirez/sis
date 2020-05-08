@@ -14,6 +14,11 @@
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			Paciente Modificado Exitosamente
 		</div>
+		@elseif($message == 'actualizado')
+		<div class="alert alert-warning alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			Paciente Actualizado Exitosamente
+		</div>
 	@endif
 	<!--FIN Mensajes de Guardado o Actualización de Comunas-->
     <div class="row">
