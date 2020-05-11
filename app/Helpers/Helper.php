@@ -57,15 +57,33 @@ class Helper
         // $direccion = str_replace(' ' . $numero_dir, '', $datos['direccion']); // Obtiene direccion base, sin numero
         
         $datos['rut']=$datos['run'];
+        //isset preegunta si este dato existe y si es distinto a nulo (isset en consultas db mee dice si ese registro existe) devuelve un boleano
         $es_maestra=isset(DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0]);
         if($es_maestra){
-            dd("es maestra");
-
-
+            // dd("es MAESTRA");
+            // SI TRAIGO EL PACIENTE DE MAESTRA, ACTUALIZO LOS DATOS DEMOGRAFICOS EN DBMAESTRA
+            
+            $datos_siscont=DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0]
+            $comuna =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos_siscont->comuna_id)[0]; //Obtengo comuna de siscont
+            $comuna_act =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos->comuna)[0];            
+            if (
+                ($datos_siscont->email <> $datos->email) ||
+                ($datos_siscont->comuna_id <> $datos->comuna) ||    //Compara si los datos ingresados son iguales a los de comuna
+                ($datos_siscont->telefono <> $datos->telefono) ||   //lo mismo para el telefono
+                ($datos_siscont->telefono2 <> $datos->telefono2) || //lo mismo para el telefono
+                ($datos_siscont->direccion <> $datos->direccion) || //lo mismo para direccion
+                ($datos_siscont->numero <> $datos->numero )||       //lo mismo para para numero de direccion
+                ($datos_siscont->email <> $datos->email )            
+            ) {
+                //si alguno de los datos evaluados anteriormente cambia, se actualizan los datos en siscont
+                DB::connection('dbMaestra')->select('update siscont.pacientes set comuna_id=' . $comuna_act->id .
+                ', direccion="'. $datos->direccion .'", numero=' . $datos->numero .
+                ', telefono="'. $datos['telefono'] .'", telefono2="'. $datos['telefono2'] .'", email="'. $datos['email'] .'" WHERE rut =' . $datos['rut']);
+            }
+   
         }else{
-
-
-            // se guarda el dato directamente en dbMaestra, ya que es un paciente rescatado de fonasa
+            // dd("es FONASA");
+            // SI EL PACIENTE ES TRAIDO DE FONASA, CREO AL PACIENTE EN MAESTRA
 
             $fechaNacimiento = DateTime::createFromFormat('d-m-Y', $datos->fechaNacimiento);				
             $paciente = new Paciente;
@@ -78,7 +96,6 @@ class Helper
             else {	
                 $paciente->numDoc     =$datos->numDoc;
             }	
-            // dd($datos,$paciente);
 				$paciente->nombre           = $datos->nombre;
 				$paciente->apPaterno        = $datos->apPaterno;
 				$paciente->apMaterno        = $datos->apMaterno;
@@ -93,7 +110,6 @@ class Helper
                 $paciente->X                = $datos->x;
                 $paciente->Y                = $datos->y;
                 $paciente->comuna_id        = $datos->comuna;
-
                 $paciente->telefono         = $datos->telefono;
                 $paciente->telefono2        = $datos->telefono2;
                 $paciente->email            = $datos->email;
@@ -104,25 +120,7 @@ class Helper
                 
         }
             
-            
-    
-            $comuna =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos_siscont->comuna_id)[0]; //Obtengo comuna de siscont
-            $comuna_act =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos->comuna)[0];            
-            if (
-                ($datos_siscont->email <> $datos->email) ||
-                ($datos_siscont->comuna_id <> $datos->comuna) || //Compara si los datos ingresados son iguales a los de comuna
-                ($datos_siscont->telefono <> $datos->telefono) || //lo mismo para el telefono
-            ($datos_siscont->telefono2 <> $datos->telefono2) || //lo mismo para el telefono
-            ($datos_siscont->direccion <> $datos->direccion) || //lo mismo para direccion
-            ($datos_siscont->numero <> $datos->numero ) //lo mismo para para numero de direccion
-        ) {
-            //si alguno de los datos evaluados anteriormente cambia, se actualizan los datos en siscont
-            DB::connection('dbMaestra')->select('update siscont.pacientes set comuna_id=' . $comuna_act->id .
-                ', direccion="'. $datos->direccion .'", numero=' . $datos->numero .
-                ', telefono="'. $datos['telefono'] .'", telefono2="'. $datos['telefono2'] .'", email="'. $datos['email'] .'" WHERE rut =' . $datos['rut']);
-               
-            }
-
+         
     }
 
     public static function formatearFecha($fecha)
