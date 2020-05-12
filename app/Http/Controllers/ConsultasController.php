@@ -72,7 +72,7 @@ class ConsultasController extends Controller
             $fonasaApi = new FonasaApi();
             $paciente = $fonasaApi->fetchNormalized($rut, Helper::calcularDv($rut));
 
-            // dd($paciente);
+            //  dd($paciente);
 
             if (gettype($paciente) == "string") {
                 return $paciente;
@@ -98,11 +98,11 @@ class ConsultasController extends Controller
         //Obtiene la prevision, y si es que es fonasa tambien obtiene el tramo
         
         if($paciente['RESPUESTA_ORIGINAL']['desIsapre']==' '){
-            $previ = 'Fonasa';
-            $tramo = $paciente['RESPUESTA_ORIGINAL']['afiliadoTO']['tramo'];
+            $paciente["previ"] = 'Fonasa';
+            $paciente["tramo"] = $paciente['RESPUESTA_ORIGINAL']['afiliadoTO']['tramo'];
         }else{
-            $previ = 'Isapre';
-            $tramo = 'X';
+            $paciente["previ"]= 'Isapre';
+            $paciente["tramo"]= 'X';
         }
         
         $paciente['comuna_id']= $comuna[0]->id;
@@ -114,36 +114,36 @@ class ConsultasController extends Controller
             $paciente['telefono']="NULL";
         }
         //construye el array con los datos necesarios para ingresar un paciente a siscont
-        $datos =
-        ['2', 
-        $paciente['rut'], 
-            '"'.$paciente['dv'].'"',
-            '"'.$paciente['nombres'].'"', 
-            '"'.$paciente['apellido_paterno'].'"', 
-            '"'.$paciente['apellido_materno'].'"', 
-            'STR_TO_DATE('.'"'.$paciente['fecha_nacimiento'].'", '.'"%Y-%m-%d"'.')',
-            $genero[$paciente['genero']],
-            $prevision[$previ],
-            $tramos[$tramo],
-            '2',
-            '2',
-            '2',
-            '"'.$paciente['direccion'].'"',
-            '0',
-            $comuna[0]->id,
-            $paciente['telefono'],
-            '1',
-            '"'.$now.'"',
-            '"'.$now.'"'
-        ];
+        // $datos =
+        // ['2', 
+        // $paciente['rut'], 
+        //     '"'.$paciente['dv'].'"',
+        //     '"'.$paciente['nombres'].'"', 
+        //     '"'.$paciente['apellido_paterno'].'"', 
+        //     '"'.$paciente['apellido_materno'].'"', 
+        //     'STR_TO_DATE('.'"'.$paciente['fecha_nacimiento'].'", '.'"%Y-%m-%d"'.')',
+        //     $genero[$paciente['genero']],
+        //     $prevision[$previ],
+        //     $tramos[$tramo],
+        //     '2',
+        //     '2',
+        //     '2',
+        //     '"'.$paciente['direccion'].'"',
+        //     '0',
+        //     $comuna[0]->id,
+        //     $paciente['telefono'],
+        //     '1',
+        //     '"'.$now.'"',
+        //     '"'.$now.'"'
+        // ];
         
         //construye una cade string con los datos a ingresar a siscont
-        $datos_str = join( ',', $datos);
+        // $datos_str = join( ',', $datos);
         //dd($paciente,$datos_str);
         //ejecuta la consulta para ingresar paciente a siscont, utiliza $datos_str concadenado a la consulta.
         // DB::connection('dbMaestra')->select('insert into siscont.pacientes (tipoDoc,rut,dv,nombre,apPaterno,apMaterno,fechaNacimiento,genero_id,prevision_id,tramo_id,prais,funcionario,via_id,direccion,numero,comuna_id,telefono,active,created_at,updated_at) values ('.$datos_str.')');
         
-        // dd($rut,$paciente);
+        //   dd($rut,$paciente);
         return $paciente;
     }
     

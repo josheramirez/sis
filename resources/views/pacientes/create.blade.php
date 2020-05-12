@@ -49,6 +49,8 @@
 							@endphp
 							
 							<input name="rut_existe" id="rut_existe" type="hidden" value=false>
+							<input name="es_fonasa" id="es_fonasa" type="hidden" value=false>
+							<input name="es_maestra" id="es_maestra" type="hidden" value=false>
 							<!--Rut-->
 							<div class="form-group{{ $errors->has('run') ? ' has-error' : '' }}" id="divRun">
 								<label for="run" class="col-md-4 control-label">R.U.N.</label>
@@ -189,7 +191,7 @@
 								<label for="tramo" class="col-md-4 control-label">Tramo</label>
 
 								<div class="col-md-8">
-									<select id="tramo" class="form-control" name="tramo" disabled>
+									<select id="tramo" class="form-control" name="tramo" >
 										<option value="">Seleccione Tramo</option>
 										@foreach($tramos as $tramo)
 											@if($tramo->id === old('tramo'))

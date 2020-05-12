@@ -48,22 +48,28 @@ class Helper
 
     public static function actualizarSiscont($datos)
     {
-
-        $connection = mysqli_init();
-        $connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
-        $connection = $connection->real_connect('10.8.64.41', 'nacevedo', '12345678', '');
+        
+        
+        // $es_maestra=null;
+        // $connection = mysqli_init();
+        // $connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
+        // $connection = $connection->real_connect('10.8.64.41', 'nacevedo', '12345678', '');
         
         // $numero_dir = self::getNumeroDir($datos['direccion']); //Obtiene numero de direccion guardada
         // $direccion = str_replace(' ' . $numero_dir, '', $datos['direccion']); // Obtiene direccion base, sin numero
         
-        $datos['rut']=$datos['run'];
+        // dd($datos);
+        // $datos['rut']=$datos['run'];
         //isset preegunta si este dato existe y si es distinto a nulo (isset en consultas db mee dice si ese registro existe) devuelve un boleano
+        
+        
         $es_maestra=isset(DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0]);
-        if($es_maestra){
-            // dd("es MAESTRA");
-            // SI TRAIGO EL PACIENTE DE MAESTRA, ACTUALIZO LOS DATOS DEMOGRAFICOS EN DBMAESTRA
+        // \var_dump($es_maestra, $datos['rut']);
+         if($es_maestra){
+            //   dd("es MAESTRA");
+        //     // SI TRAIGO EL PACIENTE DE MAESTRA, ACTUALIZO LOS DATOS DEMOGRAFICOS EN DBMAESTRA
             
-            $datos_siscont=DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0]
+            $datos_siscont=DB::connection('dbMaestra')->select('select * FROM siscont.pacientes WHERE rut =' . $datos['rut'])[0];
             $comuna =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos_siscont->comuna_id)[0]; //Obtengo comuna de siscont
             $comuna_act =  DB::connection('dbMaestra')->select('select * FROM siscont.comunas WHERE id =' . $datos->comuna)[0];            
             if (
@@ -80,28 +86,34 @@ class Helper
                 ', direccion="'. $datos->direccion .'", numero=' . $datos->numero .
                 ', telefono="'. $datos['telefono'] .'", telefono2="'. $datos['telefono2'] .'", email="'. $datos['email'] .'" WHERE rut =' . $datos['rut']);
             }
-   
-        }else{
-            // dd("es FONASA");
-            // SI EL PACIENTE ES TRAIDO DE FONASA, CREO AL PACIENTE EN MAESTRA
-
-            $fechaNacimiento = DateTime::createFromFormat('d-m-Y', $datos->fechaNacimiento);				
-            $paciente = new Paciente;
             
-            $paciente->tipoDoc        =$datos->tipoDoc;
-            if ($datos->tipoDoc=="1") {
-                $paciente->rut        =explode("-",$datos->rut)[0];
-                $paciente->dv         =explode("-",$datos->rut)[1];
-            }
-            else {	
-                $paciente->numDoc     =$datos->numDoc;
-            }	
-				$paciente->nombre           = $datos->nombre;
-				$paciente->apPaterno        = $datos->apPaterno;
-				$paciente->apMaterno        = $datos->apMaterno;
+         }else{
+             //     // SI EL PACIENTE ES TRAIDO DE FONASA, CREO AL PACIENTE EN MAESTRA
+            //  dd($datos);
+             
+             $fechaNacimiento = DateTime::createFromFormat('d-m-Y', $datos->fechaNacimiento);				
+             $paciente = new Paciente;
+             
+             
+             $paciente->tipoDoc        =$datos->tipoDoc;
+             
+             if ($datos->tipoDoc=="1") {
+                 $paciente->rut=explode("-",$datos->run)[0];
+                 $paciente->dv=explode("-",$datos->run)[1];
+                }
+                else {	
+                    $paciente->numDoc     =$datos->numDoc;
+                }	
+                
+                
+                // dd($datos->all(), "es FONASA", $paciente);
+                $paciente->nombre           = $datos->nombre;
+                $paciente->apPaterno        = $datos->apPaterno;
+                $paciente->apMaterno        = $datos->apMaterno;
 				$paciente->fechaNacimiento  = $fechaNacimiento;
                 $paciente->genero_id        = $datos->genero;
                 $paciente->prevision_id     = $datos->prevision;
+                $paciente->tramo_id            = $datos->tramo;
                 $paciente->prais            = $datos->prais;
                 $paciente->funcionario      = $datos->funcionario;
                 $paciente->via_id     	    = $datos->via;
@@ -115,10 +127,11 @@ class Helper
                 $paciente->email            = $datos->email;
                 $paciente->active           = $datos->active;
                 
-                // dd($datos->all(),$paciente);
                 $paciente->save();	
-                
-        }
+                // dd("es FONASA",$datos,$paciente);
+             
+
+          }
             
          
     }

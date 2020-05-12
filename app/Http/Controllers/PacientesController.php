@@ -121,137 +121,149 @@ class PacientesController extends Controller
     public function store(Request $request)
     {
 
+// dd($request);
+if (Auth::check()) {
+	
+	//en caso que el paciente haya sido encontrado en maestro o en fonasa
+	if($request->input('rut_existe')==true){
+		
+		 Helper::actualizarSiscont($request);
+		// dd( $request,$request->es_maestra);
+		
+				if($request->es_maestra=="true"){
+					// dd("es_maestra");
 
-		//  dd( $request);
-		if (Auth::check()) {
-			
-			
-			//en caso que el paciente haya sido encontrado en maestro o en fonasa
-			if($request->input('rut_existe')==true){
-				Helper::actualizarSiscont($request);
-				return redirect('/pacientes')->with('message','actualizado');
-			}
-
-			//valida si rut existe
-			if ($request->input('tipoDoc') == 1) {
-				$validator2 = validator::make($request->all(), [
-					'rut' => 'required|integer|unique:pacientes',	
-				]);
-				
-				if ($validator2->fails()) {
-					if ($request->input('flujo') == '1') {
-						return redirect('pacientes/create')
-								->with('message','rut')
-								->withInput();
-					}
-					else {
-						return redirect('crear/pacientes/'.$request->input('flujo'))
-								->with('message','rut')
-								->withInput();
-					}
-				} 			
-			}
-
-
-			//valida tramo
-			if ($request->input('prevision') == 1) {
-				$validator3 = validator::make($request->all(), [
-					'tramo' => 'required',	
-				]);
-				
-				if ($validator3->fails()) {
-					if ($request->input('flujo') == '1') {
-						return redirect('pacientes/create')
-								->with('message','tramo')
-								->withInput();
-					}
-					else {
-						return redirect('crear/pacientes/'.$request->input('flujo'))
-								->with('message','tramo')
-								->withInput();
-					}
-				} 			
-			}
-
-
-			// valida que campos sean los correctos
-			$validator = validator::make($request->all(), [
-				'nombre'    => 'required|string|max:150',
-				'apPaterno' => 'required|string|max:150',
-				'apMaterno' => 'required|string|max:150',
-				'fechaNacimiento' => 'required|date|date_format:"d-m-Y"',
-				'genero'    => 'required',
-				'prevision' => 'required',
-				'direccion' => 'required|string|max:150',
-				'numero' 	=> 'required|string|max:150',
-				'comuna'    => 'required',
-				'via'    	=> 'required',
-				'telefono'  => 'required|string|max:150',
-				'telefono2' => 'nullable|string|max:150',
-				'email'     => 'nullable|string|max:150',
-			]);
-			
-			if ($validator->fails()) {
-				if ($request->input('flujo') == '1') {
-					return redirect('pacientes/create')
-							->withErrors($validator)
-							->withInput();
-				}
-				else {
-					return redirect('crear/pacientes/'.$request->input('flujo'))
-							->withErrors($validator)
-							->withInput();
-				}
-			}
-			else {
-				//formatea fechas
-				$fechaNacimiento = DateTime::createFromFormat('d-m-Y', $request->input('fechaNacimiento'));				
-				
-				$paciente = new Paciente;
-				
-				$paciente->tipoDoc        = $request->input('tipoDoc');
-				
-				if ($request->input('tipoDoc') == 1) {
-					$paciente->rut        = $request->input('rut');
-					$paciente->dv         = $request->input('dv');
-				}
-				else {	
-					$paciente->numDoc     = $request->input('numDoc');
-				}	
-				
-				$paciente->nombre         = $request->input('nombre');
-				$paciente->apPaterno      = $request->input('apPaterno');
-				$paciente->apMaterno      = $request->input('apMaterno');
-				$paciente->fechaNacimiento  = $fechaNacimiento;
-				$paciente->genero_id      = $request->input('genero');
-				$paciente->prevision_id   = $request->input('prevision');
-				$paciente->tramo_id       = $request->input('tramo');
-				$paciente->prais          = $request->input('prais');
-				$paciente->funcionario    = $request->input('funcionario');
-				$paciente->via_id     	  = $request->input('via');
-				$paciente->direccion      = $request->input('direccion');
-				$paciente->numero         = $request->input('numero');
-				$paciente->X              = $request->input('x');
-				$paciente->Y              = $request->input('y');
-				$paciente->comuna_id      = $request->input('comuna');
-
-				$paciente->telefono       = $request->input('telefono');
-				$paciente->telefono2      = $request->input('telefono2');
-				$paciente->email          = $request->input('email');
-				$paciente->active         = $request->input('active');
-			
-				$paciente->save();			
-				
-				if ($request->input('flujo') == '1') {
+					return redirect('/pacientes')->with('message','actualizado');
+				}else{
+					// dd("es fonasa");
 					return redirect('/pacientes')->with('message','store');
 				}
-				elseif ($request->input('flujo') == '2') {
-					return redirect('/contrarreferencias/create')->with('message','store');
+
+			}else{
+				
+				//valida si rut existe
+				if ($request->input('tipoDoc') == 1) {
+					$validator2 = validator::make($request->all(), [
+						'rut' => 'required|integer|unique:pacientes',	
+					]);
+					
+					if ($validator2->fails()) {
+						if ($request->input('flujo') == '1') {
+							return redirect('pacientes/create')
+									->with('message','rut')
+									->withInput();
+						}
+						else {
+							return redirect('crear/pacientes/'.$request->input('flujo'))
+									->with('message','rut')
+									->withInput();
+						}
+					} 			
 				}
-				elseif ($request->input('flujo') == '3') {
-					return redirect('/listaesperas/create')->with('message','store');
+	
+	
+				//valida tramo
+				if ($request->input('prevision') == 1) {
+					$validator3 = validator::make($request->all(), [
+						'tramo' => 'required',	
+					]);
+					
+					if ($validator3->fails()) {
+						if ($request->input('flujo') == '1') {
+							return redirect('pacientes/create')
+									->with('message','tramo')
+									->withInput();
+						}
+						else {
+							return redirect('crear/pacientes/'.$request->input('flujo'))
+									->with('message','tramo')
+									->withInput();
+						}
+					} 			
 				}
+	
+	
+				// valida que campos sean los correctos
+				$validator = validator::make($request->all(), [
+					'nombre'    => 'required|string|max:150',
+					'apPaterno' => 'required|string|max:150',
+					'apMaterno' => 'required|string|max:150',
+					'fechaNacimiento' => 'required|date|date_format:"d-m-Y"',
+					'genero'    => 'required',
+					'prevision' => 'required',
+					'direccion' => 'required|string|max:150',
+					'numero' 	=> 'required|string|max:150',
+					'comuna'    => 'required',
+					'via'    	=> 'required',
+					'telefono'  => 'required|string|max:150',
+					'telefono2' => 'nullable|string|max:150',
+					'email'     => 'nullable|string|max:150',
+				]);
+				
+				if ($validator->fails()) {
+					if ($request->input('flujo') == '1') {
+						return redirect('pacientes/create')
+								->withErrors($validator)
+								->withInput();
+					}
+					else {
+						return redirect('crear/pacientes/'.$request->input('flujo'))
+								->withErrors($validator)
+								->withInput();
+					}
+				}
+				else {
+					//formatea fechas
+					$fechaNacimiento = DateTime::createFromFormat('d-m-Y', $request->input('fechaNacimiento'));				
+					
+					$paciente = new Paciente;
+					
+					$paciente->tipoDoc        = $request->input('tipoDoc');
+					
+					if ($request->input('tipoDoc') == 1) {
+						$paciente->rut        = $request->input('rut');
+						$paciente->dv         = $request->input('dv');
+					}
+					else {	
+						$paciente->numDoc     = $request->input('numDoc');
+					}	
+					
+					$paciente->nombre         = $request->input('nombre');
+					$paciente->apPaterno      = $request->input('apPaterno');
+					$paciente->apMaterno      = $request->input('apMaterno');
+					$paciente->fechaNacimiento  = $fechaNacimiento;
+					$paciente->genero_id      = $request->input('genero');
+					$paciente->prevision_id   = $request->input('prevision');
+					$paciente->tramo_id       = $request->input('tramo');
+					$paciente->prais          = $request->input('prais');
+					$paciente->funcionario    = $request->input('funcionario');
+					$paciente->via_id     	  = $request->input('via');
+					$paciente->direccion      = $request->input('direccion');
+					$paciente->numero         = $request->input('numero');
+					$paciente->X              = $request->input('x');
+					$paciente->Y              = $request->input('y');
+					$paciente->comuna_id      = $request->input('comuna');
+	
+					$paciente->telefono       = $request->input('telefono');
+					$paciente->telefono2      = $request->input('telefono2');
+					$paciente->email          = $request->input('email');
+					$paciente->active         = $request->input('active');
+				
+					$paciente->save();			
+					
+					if ($request->input('flujo') == '1') {
+						return redirect('/pacientes')->with('message','store');
+					}
+					elseif ($request->input('flujo') == '2') {
+						return redirect('/contrarreferencias/create')->with('message','store');
+					}
+					elseif ($request->input('flujo') == '3') {
+						return redirect('/listaesperas/create')->with('message','store');
+					}
+				}
+
 			}
+
         }
 		else {
 			return view('auth/login');

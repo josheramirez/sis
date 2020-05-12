@@ -360,6 +360,8 @@ function consultar(d1) {
                                 }
                                 else{
                                     if (data == "Rut no existe en la Base Datos.") {
+                                        document.getElementById("formularioPaciente").reset();
+                                        $('#run').val(rut_original);
                                         toastr.warning('No existe el paciente en los registros de Fonasa');
                                     }
                                     else {
@@ -367,6 +369,7 @@ function consultar(d1) {
 // USUARIO ENCONTRADO en FONASA
 
 $("#rut_existe").val(true);
+$("#es_fonasa").val(true);
 toastr.success('Paciente encontrado!');
 datos_afiliado = data['RESPUESTA_ORIGINAL']['afiliadoTO'];
 resp_original = data['RESPUESTA_ORIGINAL'];
@@ -388,7 +391,7 @@ if (datos_afiliado['tramo'] != ' ') {
 // console.log(pacienteFonasa);
 
 document.getElementById("formularioPaciente").reset();
-$('#run').val(rut_original);
+$('#run').val(rut_original).change();
 
 $("#nombre").val(data['nombres']);
 $("#apPaterno").val(data['apellido_paterno']);
@@ -542,6 +545,7 @@ if(data['email']!=0 && data['email']!=null){
                     console.log("encontrado en maestra "+JSON.stringify(data))
                 
                     $("#rut_existe").val(true);
+                    $("#es_maestra").val(true);
                     toastr.success('Paciente encontrado!');
                     edad = data['edad'];
                     comuna = data['desc_comuna'];
