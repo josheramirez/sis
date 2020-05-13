@@ -346,8 +346,7 @@ var Fn = {
 
 
 function consultar(d1) {
-    
- console.log($("#run").val().trim());
+
 
     if(!Fn.validaRut( $("#run").val().trim())){
         toastr.warning('Ingresa un Rut correcto');
@@ -379,13 +378,11 @@ function consultar(d1) {
                             toastr.info('Base de datos inaccesible,  Buscando en Fonasa');
                         }
                         //BUSCO EN BASE DATOS FONASA
-
                         console.log("buscando en "+JSON.stringify(d[1]));
                         $.ajax({
                             type: 'GET',
                             url: d[1],
                             success: function (data) {
-                                
                                 if (data == "error conexion fonasa") {
                                     toastr.warning('No es posible conectar con Fonasa');
                                 }
@@ -401,6 +398,7 @@ function consultar(d1) {
 
 $("#rut_existe").val(true);
 $("#es_fonasa").val(true);
+$("#es_maestra").val(false);
 toastr.success('Paciente encontrado!');
 datos_afiliado = data['RESPUESTA_ORIGINAL']['afiliadoTO'];
 resp_original = data['RESPUESTA_ORIGINAL'];
@@ -577,6 +575,7 @@ if(data['email']!=0 && data['email']!=null){
                 
                     $("#rut_existe").val(true);
                     $("#es_maestra").val(true);
+                    $("#es_fonasa").val(false);
                     toastr.success('Paciente encontrado!');
                     edad = data['edad'];
                     comuna = data['desc_comuna'];

@@ -131,15 +131,15 @@ if (Auth::check()) {
 		// dd( $request,$request->es_maestra);
 		
 				if($request->es_maestra=="true"){
-					// dd("es_maestra");
-
+					//  dd("es_maestra",$request);
 					return redirect('/pacientes')->with('message','actualizado');
 				}else{
-					// dd("es fonasa");
+					//  dd("es fonasa",$request);
 					return redirect('/pacientes')->with('message','store');
 				}
 
-			}else{
+			
+	}else{
 				
 				//valida si rut existe
 				if ($request->input('tipoDoc') == 1) {

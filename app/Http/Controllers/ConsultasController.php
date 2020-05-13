@@ -34,7 +34,6 @@ class ConsultasController extends Controller
                 $paciente["cod_comuna"] = $comuna[0]->codigo;
                 $paciente["tipo_consulta"] = "DB";
                 $paciente[0]->direccion = str_replace(' ' . $paciente[0]->numero, '', $paciente[0]->direccion);
-                
             }
         } catch (Exception $e) {
              return $e->getMessage();

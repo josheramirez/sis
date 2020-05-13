@@ -127,8 +127,9 @@ class Helper
                 $paciente->email            = $datos->email;
                 $paciente->active           = $datos->active;
                 
-                $paciente->save();	
-                // dd("es FONASA",$datos,$paciente);
+                $paciente->save();
+
+                //dd("es FONASA",$datos,$paciente);
              
 
           }
