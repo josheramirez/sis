@@ -80,6 +80,21 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        'maestra' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_MAESTRA', '10.8.64.57'),
+            'port' => env('DB_PORT_MAESTRA', '3306'),
+            'database' => env('DB_DATABASE_MAESTRA', 'maestra'),
+            'username' => env('DB_USERNAME_MAESTRA', 'nicolasacevedo'),
+            'password' => env('DB_PASSWORD_MAESTRA', 'Na.12345'),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => 'InnoDB',
+        ],
+
     ],
 
     /*

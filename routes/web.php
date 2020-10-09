@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/login_portal/{identificador}/{token}', 'UserPortalController@loginPortal')->name('login.portal');
 
 //CAMBIA VISTA LOGIN COMO INICIO DE SITIO
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('login');
@@ -18,7 +19,7 @@ Route::get('/', 'Auth\LoginController@showLoginForm')->name('login');
 Auth::routes();
 
 //RUTA DE VISTA, UNA VEZ QUE SE ESTA LOGUEADO
- Route::get('/home', 'HomeController@index');
+ Route::get('/home', 'HomeController@index')->name('home.index');
 
 //RUTAS ADMINISTRACION DE USUARIOS
 Route::resource('users','UsersController');

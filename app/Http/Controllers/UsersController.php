@@ -421,4 +421,5 @@ class UsersController extends Controller
 			return view('auth/login');
 		}
 	}
+
 }
