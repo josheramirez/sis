@@ -13,7 +13,8 @@ class UserPortalController extends Controller
 {
 	public function loginPortal($identificador, $token)
     {
-        $usuario_portal = UsuarioPortal::where('rut', $identificador)->where('token_portal', $token)->first();
+        $usuario_portal = UsuarioPortal::where('email', $identificador)->where('token_portal', $token)->first();
+        // dd($identificador, $token);
         
         if ($usuario_portal != null && hash_equals($usuario_portal['token_portal'], $token)) {
             // db de sic en el campo email guardan el valor rut sin verificador
